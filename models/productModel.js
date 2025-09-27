@@ -1,10 +1,9 @@
 const {DataTypes} = require('sequelize')
-
 const sequelize = require('../config/db')
 const Category = require('./categoryModel')
 const Brand = require('./brandModel')
 
-const Product = sequelize.define('Product',{
+const Product = sequelize.define('Product', {
     pName: {
       type: DataTypes.STRING,
       allowNull: false
@@ -32,9 +31,9 @@ const Product = sequelize.define('Product',{
 })
 
 Product.belongsTo(Category, {foreignKey:"catID"})
-Category.hasMany(Product, {foreignKey: "catID"})
+Category.hasMany(Product, {foreignKey: "id"})
 
 Product.belongsTo(Brand, {foreignKey:"brandID"})
-Brand.hasMany(Product, {foreignKey: "brandID"})
+Brand.hasMany(Product, {foreignKey: "id"})
 
 module.exports = Product
