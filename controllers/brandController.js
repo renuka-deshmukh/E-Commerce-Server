@@ -29,10 +29,10 @@ async function createBrand(req, res) {
         } else {
             res.status(500).send({ msg: "Error with creating brand", success: false })
         }
-
         
     } catch (error) {
-         res.status(500).send({ msg: 'server error' })
+         console.error("Create Brand Error:", error);
+    res.status(500).send({ msg: 'server error', error: error.message });
     }
   
 }
@@ -46,14 +46,19 @@ function updateBrand(req, res) {
     }
 }
 
-function deleteBrand(req, res) {
-    const ID = parseInt(req.params.ID)
-try {
-        
+async function deleteBrand(req, res) {
+    const id = req.params.id;
+    try {
+        const deleted = await Brand.destroy({ where: { id: id } }); 
+        if (deleted) {
+            res.status(200).send({ msg: 'Brand deleted Successfully', success: true });
+        } else {
+            res.status(404).send({ msg: "Brand not found", success: false });
+        }
     } catch (error) {
-         res.status(500).send({ msg: 'server error' })
+        console.error("Delete Brand Error:", error);
+        res.status(500).send({ msg: 'Server error', error: error.message });
     }
-    
 }
 
 

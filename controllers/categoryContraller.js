@@ -3,7 +3,7 @@ const Category = require('../models/categoryModel')
  const getAllCategories = async (req, res) => {
     try {
         const categories = await Category.findAll() 
-        res.status(200).send({categories:categories, success:true })
+        res.status(200).send({categories:categories,  success:true })
 
     } catch (error) {
         res.status(500).send({ msg: 'server error' })
@@ -33,8 +33,10 @@ async function createCategory(req, res) {
         }
 
     } catch (error) {
-        res.status(500).send({ msg: 'server error' })
-    }
+    console.error("Create Category Error:", error);
+    res.status(500).send({ msg: 'server error', error: error.message });
+}
+
 
 }
 
@@ -48,12 +50,20 @@ function updateCategory(req, res) {
 
 }
 
-function deleteCategory(req, res) {
+async function deleteCategory(req, res) {
 
-    try {
-
+   const id = req.params.id
+try {
+        const deleteCategory = await Category.destroy({where: { id}})
+        if (deleteCategory) {
+            res.status(200).send({ msg: 'Category deleted Successfully', success: true })
+        } else {
+            res.status(500).send({ msg: "Error with deleting Category", success: false })
+        }
+        
     } catch (error) {
-        res.status(500).send({ msg: 'server error' })
+         console.error("Delete Category Error:", error);
+    res.status(500).send({ msg: 'server error', error: error.message });
     }
 
 }
