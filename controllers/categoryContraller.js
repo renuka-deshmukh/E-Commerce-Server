@@ -40,14 +40,30 @@ async function createCategory(req, res) {
 
 }
 
-function updateCategory(req, res) {
+async function updateCategory(req, res) {
+  const { id } = req.params;
+  const { cName } = req.body; // ✅ extract cName directly
 
-    try {
+  try {
+    const updateCat = await Category.findByPk(id);
 
-    } catch (error) {
-        res.status(500).send({ msg: 'server error' })
+    if (!updateCat) {
+      return res
+        .status(404)
+        .send({ msg: "Category not found", success: false });
     }
 
+    updateCat.cName = cName; 
+    await updateCat.save();
+
+    res
+      .status(200)
+      .send({ msg: "Category updated successfully", success: true, category: updateCat });
+
+  } catch (error) {
+    console.error("Update Category Error:", error);
+    res.status(500).send({ msg: "Server error", success: false });
+  }
 }
 
 async function deleteCategory(req, res) {

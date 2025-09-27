@@ -34,10 +34,33 @@ async function createProduct(req, res) {
 
 }
 
-function updateProduct(req, res) {
+async function updateProduct(req, res) {
+    const id = req.params.id
+    const { pName, pDescription, price, quentity, catID, brandID } = req.body;
 
+    try {
+        const product = await Product.findByPk(id);
 
-}
+        if (!product) {
+            res.status(404).send({ msg: "product not found", success: false })
+        }
+
+        if (pName !== undefined) product.pName = pName;
+        if (pDescription !== undefined) product.pDescription = pDescription;
+        if (price !== undefined) product.price = price;
+        if (quentity !== undefined) product.quentity = quentity;
+        if (catID !== undefined) product.catID = catID;
+        if (brandID !== undefined) product.brandID = brandID;
+
+        await product.save();
+        res.status(200).send({ msg: "Product updated successfully", success: true })
+
+    } catch {
+        console.error("Update Product Error:", error);
+        res.status(500).send({ msg: "Server error", error: error.message });
+
+    }
+};
 
 async function deleteProduct(req, res) {
     const id = req.params.id;

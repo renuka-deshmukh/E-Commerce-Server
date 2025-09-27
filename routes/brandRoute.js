@@ -7,7 +7,7 @@ router.get('/getAllBrands', brandController.getAllBrands)
 router.get('/getBrandsById/:ID', brandController.getBrandById)
 router.post('/createBrand',brandController.createBrand)
 router.delete('/deleteBrands/:id',brandController.deleteBrand)
-router.put('/updateBrands/:ID',brandController.updateBrand)
+router.put('/updateBrand/:id',brandController.updateBrand)
 
 module.exports = router
 

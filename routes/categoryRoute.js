@@ -7,7 +7,7 @@ router.get('/getAllCategories', categoryController.getAllCategories)
 router.get('/getCategoryById/:ID', categoryController.getCategoryById)
 router.post("/createCategory",categoryController.createCategory)
 router.delete("/deleteCategory/:id",categoryController.deleteCategory)
-router.put("/updateCategory/:ID",categoryController.updateCategory)
+router.put("/updateCategory/:id",categoryController.updateCategory)
 
 module.exports = router
 
