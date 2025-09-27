@@ -37,14 +37,32 @@ async function createBrand(req, res) {
   
 }
 
-function updateBrand(req, res) {
-   const ID = req.params.ID
-   try {
-        
-    } catch (error) {
-         res.status(500).send({ msg: 'server error' })
+async function updateBrand(req, res) {
+  const { id } = req.params;
+  const { bName } = req.body; // ✅ extract cName directly
+
+  try {
+    const brand = await Brand.findByPk(id);
+
+    if (!brand) {
+      return res
+        .status(404)
+        .send({ msg: "Brand not found", success: false });
     }
+
+    brand.bName = bName; 
+    await brand.save();
+
+    res
+      .status(200)
+      .send({ msg: "Brand updated successfully", success: true, brand: brand });
+
+  } catch (error) {
+    console.error("Update brand Error:", error);
+    res.status(500).send({ msg: "Server error", success: false });
+  }
 }
+
 
 async function deleteBrand(req, res) {
     const id = req.params.id;
@@ -60,7 +78,6 @@ async function deleteBrand(req, res) {
         res.status(500).send({ msg: 'Server error', error: error.message });
     }
 }
-
 
 
 
