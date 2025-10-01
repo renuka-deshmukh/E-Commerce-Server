@@ -1,4 +1,6 @@
+const { Op } = require('sequelize')
 const Product = require('../models/productModel')
+const Brand = require('../models/brandModel')
 
 const getAllProducts = async (req, res) => {
 
@@ -11,11 +13,22 @@ const getAllProducts = async (req, res) => {
     }
 }
 
-const getProductById = (req, res) => {
+async function getProductById(req, res) {
+    try {
+        const { id } = req.params;
+        const product = await Product.findByPk(id);
 
+        if (!product) {
+            return res.status(404).json({ success: false, msg: "Product not found" });
+        }
 
-
+        res.status(200).json({ success: true, product });
+    } catch (error) {
+        console.error("Error fetching product by ID:", error);
+        res.status(500).json({ msg: "Server error" });
+    }
 }
+
 
 async function createProduct(req, res) {
 
@@ -77,12 +90,62 @@ async function deleteProduct(req, res) {
     }
 }
 
+async function getProductByFilter(req, res) {
+    console.log(req.query);
+    const { minPrice, maxPrice } = req.query
+
+    const whereClause = {}
+
+    if (minPrice && maxPrice) {
+        whereClause.price = { [Op.between]: [Number(minPrice), Number(maxPrice)] };
+    }
+    try {
+        const products = await Product.findAll({
+            where: whereClause,
+            include: ["Category", "Brand"]
+        });
+        console.log(products)
+
+        if (!products) {
+            res.status(201).send({ success: true, msg: "Product not Found" });
+        } else {
+            res.status(200).send({ success: true, products: products });
+        }
+
+    } catch (error) {
+
+        res.status(500).send({ msg: "Server error" });
+    }
+}
+
+async function getProductByBrand(req, res) {
+    try {
+        const { brandID } = req.params;
+        const products = await Product.findAll({
+            where: { brandID },
+            include: [
+                {
+                    model: Brand,
+                    attributes: ["id", "bName"],
+                },
+            ],
+        });
+        res.status(200).json({ success: true, products });
+    } catch (error) {
+        console.error("Error fetching products by brand:", error);
+        res.status(500).json({ msg: "Server error" });
+    }
+}
+
+
 
 
 module.exports = {
+    getProductByBrand,
     getAllProducts,
     getProductById,
     createProduct,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    getProductByFilter
 }

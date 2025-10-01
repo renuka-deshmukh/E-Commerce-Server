@@ -31,9 +31,9 @@ const Product = sequelize.define('Product', {
 })
 
 Product.belongsTo(Category, {foreignKey:"catID"})
-Category.hasMany(Product, {foreignKey: "id"})
+Category.hasMany(Product, {foreignKey: "catID"})
 
 Product.belongsTo(Brand, {foreignKey:"brandID"})
-Brand.hasMany(Product, {foreignKey: "id"})
+Brand.hasMany(Product, {foreignKey: "brandID"})
 
 module.exports = Product

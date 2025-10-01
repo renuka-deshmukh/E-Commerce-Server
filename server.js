@@ -16,6 +16,7 @@ app.get('/', (req, res) => res.send('Hello World!'))
 app.use('/category', categoryRoute)
 app.use('/brand', brandRoute)
 app.use('/product', productRoute)
+app.use('/filter',productRoute )
 
 
 
