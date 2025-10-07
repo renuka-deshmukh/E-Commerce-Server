@@ -1,6 +1,6 @@
 const express = require('express')
 const cors = require('cors')
-
+const path = require('path')
 const categoryRoute = require('./routes/categoryRoute')
 const brandRoute = require('./routes/brandRoute')
 const productRoute = require('./routes/productRoute')
@@ -17,6 +17,7 @@ app.use('/category', categoryRoute)
 app.use('/brand', brandRoute)
 app.use('/product', productRoute)
 app.use('/filter',productRoute )
+app.use('/download', express.static(path.join('uploads')) )
 
 
 
