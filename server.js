@@ -4,6 +4,7 @@ const path = require('path')
 const categoryRoute = require('./routes/categoryRoute')
 const brandRoute = require('./routes/brandRoute')
 const productRoute = require('./routes/productRoute')
+const userRoute = require('./routes/userRoute')
 const app = express()
 const port = 7000
 
@@ -17,7 +18,8 @@ app.use('/category', categoryRoute)
 app.use('/brand', brandRoute)
 app.use('/product', productRoute)
 app.use('/filter',productRoute )
-app.use('/download', express.static(path.join('uploads')) )
+app.use('/download', express.static(path.join(__dirname, 'uploads')));
+app.use('/user', userRoute)
 
 
 

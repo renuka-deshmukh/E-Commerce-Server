@@ -1,5 +1,7 @@
 const User = require("../models/userModel");
 
+const bcrypt = require('bcryptjs')
+
 async function register(req, res) {
 
     try {
@@ -24,16 +26,17 @@ async function register(req, res) {
 async function login(req, res) {
     try {
         const { email, password } = req.body;
+
         const user = await User.findOne({ where: { email } })
         if (!user) return res.status(400).send({ msg: "User not found " })
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).send({ msg: "Invalid Credentials" })
 
-        res.status(200).json({
+        res.status(200).send({
             msg: "Login Successfull", user: {
                 id: user.id, name: user.name,
-                mobileNumber: user.mobileNumber, role: user.role, password: user.password
+                mobileNumber: user.mobileNumber, role: user.role
             }, success: true
         })
 

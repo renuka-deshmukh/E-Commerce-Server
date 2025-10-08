@@ -26,6 +26,10 @@ const Product = sequelize.define('Product', {
     brandID:{
         type:DataTypes.INTEGER,
         allowNull:false
+    },
+    pImage : {
+        type:DataTypes.STRING,
+        allowNull:false
     }
 
 })

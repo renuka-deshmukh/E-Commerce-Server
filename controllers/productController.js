@@ -2,11 +2,23 @@ const { Op } = require('sequelize')
 const Product = require('../models/productModel')
 const Brand = require('../models/brandModel')
 
+const baseURL = 'http://localhost:7000/download/'
 const getAllProducts = async (req, res) => {
 
     try {
         const prods = await Product.findAll()
-        res.status(200).send({ products: prods, success: true })
+        const updateProduct = prods.map((p) => ({
+            id: p.id,
+            pName: p.pName,
+            pDescription: p.pDescription,
+            price: p.price,
+            quentity: p.quentity,
+            catID: p.catID,
+            brandID: p.brandID,
+            pImage: p.pImage ? `${baseURL}${p.pImage}` : ''
+        }));
+
+        res.status(200).send({ products: updateProduct, success: true })
 
     } catch (error) {
         res.status(500).send({ msg: 'server error' })
@@ -17,35 +29,53 @@ async function getProductById(req, res) {
     try {
         const { id } = req.params;
         const product = await Product.findByPk(id);
+        const updateProduct = {
+            id: product.id,
+            pName: product.pName,
+             pDescription: product.pDescription,
+            price: product.price,
+            quentity: product.quentity,
+            catID: product.catID,
+            brandID: product.brandID,
+            pImage: product.pImage ? `${baseURL}${product.pImage}` : ''
+        }
 
         if (!product) {
             return res.status(404).json({ success: false, msg: "Product not found" });
         }
 
-        res.status(200).json({ success: true, product });
+        res.status(200).json({ product: updateProduct, success: true });
     } catch (error) {
         console.error("Error fetching product by ID:", error);
         res.status(500).json({ msg: "Server error" });
     }
 }
 
-
 async function createProduct(req, res) {
-
-    console.log(req.body)
+    const { pName, pDescription, price, quentity, catID, brandID } = req.body;
+    const pImage = req.file ? req.file.filename : null
     try {
-        const newProduct = await Product.create(req.body)
+
+        const newProduct = await Product.create({
+            pName: pName,
+            pDescription: pDescription,
+            price: price,
+            quentity: quentity,
+            catID: catID,
+            brandID: brandID,
+            pImage: pImage
+        });
         if (newProduct) {
-            res.status(200).send({ msg: 'Product created Successfully', success: true })
-        } else {
+            res.status(200).send({ msg: "Product created successfully", success: true });
+        }else {
             res.status(500).send({ msg: "Error with creating Product", success: false })
         }
-
     } catch (error) {
-        res.status(500).send({ msg: 'server error' })
+        console.error("Product creation error:", error);
+        res.status(500).send({ msg: "Server error", success: false });
     }
-
 }
+
 
 async function updateProduct(req, res) {
     const id = req.params.id
