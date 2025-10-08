@@ -64,27 +64,29 @@ async function createCategory(req, res) {
 
 async function updateCategory(req, res) {
   const { id } = req.params;
-  const { cName } = req.body; 
-  
-  try {
-    const updateCat = await Category.findByPk(id);
+  const { cName } = req.body;
+  const cImage = req.file ? req.file.filename : null;
 
-    if (!updateCat) {
-      return res
-        .status(404)
-        .send({ msg: "Category not found", success: false });
+  try {
+    const category = await Category.findByPk(id);
+    if (!category) {
+      return res.status(404).send({ msg: "Category not found", success: false });
     }
 
-    const cImage = req.file ? req.file.filename : updateCat.cImage;
+    // Update values
+    category.cName = cName || category.cName;
+    if (cImage) category.cImage = cImage;
 
-    await updateCat.update({ cName, cImage });
-    res
-      .status(200)
-      .send({ msg: "Category updated successfully", success: true, category: updateCat });
+    await category.save();
 
+    res.status(200).send({
+      msg: "Category updated successfully",
+      success: true,
+      category,
+    });
   } catch (error) {
     console.error("Update Category Error:", error);
-    res.status(500).send({ msg: "Server error", success: false });
+    res.status(500).send({ msg: "Server error", success: false, error: error.message });
   }
 }
 
