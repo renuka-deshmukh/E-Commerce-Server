@@ -13,6 +13,9 @@ router.put("/updateProduct/:id", protect, adminOnly, productController.updatePro
 
 router.get('/getProductByBrand/brand/:brandID', productController.getProductByBrand)
 
+router.get("/category/:catID", productController.getProductsByCategory);
+
+
 router.get('/filter', productController.getProductByFilter)
 
 module.exports = router

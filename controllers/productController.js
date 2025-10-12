@@ -167,10 +167,44 @@ async function getProductByBrand(req, res) {
     }
 }
 
+async function getProductsByCategory(req, res) {
+    try {
+        const { catID } = req.params;
+
+        const products = await Product.findAll({
+            where: { catID },
+            include: ["Brand"] // optional, include brand details
+        });
+
+        if (!products || products.length === 0) {
+            return res.status(404).send({ success: false, msg: "No products found for this category" });
+        }
+
+        const updatedProducts = products.map(p => ({
+            id: p.id,
+            pName: p.pName,
+            pDescription: p.pDescription,
+            price: p.price,
+            quentity: p.quentity,
+            catID: p.catID,
+            brandID: p.brandID,
+            brandName: p.Brand ? p.Brand.bName : null,
+            pImage: p.pImage ? `${baseURL}${p.pImage}` : ""
+        }));
+
+        res.status(200).json({ success: true, products: updatedProducts });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ msg: "Server error" });
+    }
+}
+
+
 
 
 
 module.exports = {
+    getProductsByCategory,
     getProductByBrand,
     getAllProducts,
     getProductById,

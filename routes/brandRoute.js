@@ -7,10 +7,10 @@ const {protect, adminOnly } = require('../middleware/auth');
 const router = express.Router()
 
 router.get('/getAllBrands', brandController.getAllBrands)
-router.get('/getBrandsById/:ID', brandController.getBrandById)
+router.get('/getBrandsById/:id',uploadSingle("myfile"), brandController.getBrandById)
 router.post('/createBrand',protect, adminOnly, uploadSingle("myfile"), brandController.createBrand)
 router.delete('/deleteBrands/:id',protect, adminOnly, uploadSingle("myfile"),protect,brandController.deleteBrand)
-router.put('/updateBrand/:id',protect, adminOnly, brandController.updateBrand)
+router.put('/updateBrand/:id',protect, adminOnly,uploadSingle("myfile"), brandController.updateBrand)
 
 module.exports = router
 

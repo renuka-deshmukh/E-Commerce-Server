@@ -24,7 +24,7 @@ sequelize
       console.log("Unable to connect to the database", err)
     });
 
-    sequelize.sync({ alter:true})
+    sequelize.sync({ alter:false})
     .then(()=> console.log("Table altered succesfully."))
     .catch(err => console.log("sync error:", err));
 

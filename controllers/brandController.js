@@ -20,27 +20,6 @@ const getAllBrands = async (req, res) => {
     }
 }
 
-async function getBrandById(req, res) {
-    const ID = req.params.ID;
-    try {
-        const brand = await Brand.findByPk(ID);
-        const updateBrand = {
-            id: brand.id,
-            bName: brand.bName,
-            bImage: brand.bImage ? `${baseURL}${brand.bImage}` : ''
-        }
-        if (!brand) {
-            res.status(404).send({ message: "Brand not found" });
-        } else {
-
-         res.status(200).send({ brands: updateBrand, success: true });        }
-
-    } catch (error) {
-        res.status(500).send({ msg: 'server error' })
-    }
-
-}
-
 async function createBrand(req, res) {
     console.log(req.body)
     bName = req.body.bName;
@@ -60,9 +39,33 @@ async function createBrand(req, res) {
 
 }
 
+async function getBrandById(req, res) {
+    const id = req.params.id;
+    try {
+        const brand = await Brand.findByPk(id);
+        const updateBrand = {
+            id: brand.id,
+            bName: brand.bName,
+            bImage: brand.bImage ? `${baseURL}${brand.bImage}` : ''
+        }
+        if (!brand) {
+            res.status(404).send({ message: "Brand not found" });
+        } else {
+
+            res.status(200).send({ brands: updateBrand, success: true });
+        }
+
+    } catch (error) {
+        res.status(500).send({ msg: 'server error' })
+    }
+
+}
+
+
 async function updateBrand(req, res) {
     const { id } = req.params;
-    const { bName } = req.body; // ✅ extract cName directly
+    const { bName } = req.body;
+    const bImage = req.file ? `/uploads/${req.file.filename}` : null;
 
     try {
         const brand = await Brand.findByPk(id);
@@ -73,41 +76,47 @@ async function updateBrand(req, res) {
                 .send({ msg: "Brand not found", success: false });
         }
 
-        brand.bName = bName;
+        brand.bName = bName || brand.bName;
+        if (bImage) brand.bImage = bImage;
         await brand.save();
 
-        res
-            .status(200)
-            .send({ msg: "Brand updated successfully", success: true, brand: brand });
-
+        res.status(200).send({
+            msg: "Brand updated successfully",
+            success: true,
+            brand: {
+                id: brand.id,
+                bName: brand.bName,
+                bImage: brand.bImage ? `${baseURL}${brand.bImage}` : "",
+            },
+        });
     } catch (error) {
-        console.error("Update brand Error:", error);
-        res.status(500).send({ msg: "Server error", success: false });
+            console.error("Update brand Error:", error);
+            res.status(500).send({ msg: "Server error", success: false });
+        }
     }
-}
 
 
 async function deleteBrand(req, res) {
-    const id = req.params.id;
-    try {
-        const deleted = await Brand.destroy({ where: { id: id } });
-        if (deleted) {
-            res.status(200).send({ msg: 'Brand deleted Successfully', success: true });
-        } else {
-            res.status(404).send({ msg: "Brand not found", success: false });
+        const id = req.params.id;
+        try {
+            const deleted = await Brand.destroy({ where: { id: id } });
+            if (deleted) {
+                res.status(200).send({ msg: 'Brand deleted Successfully', success: true });
+            } else {
+                res.status(404).send({ msg: "Brand not found", success: false });
+            }
+        } catch (error) {
+            console.error("Delete Brand Error:", error);
+            res.status(500).send({ msg: 'Server error', error: error.message });
         }
-    } catch (error) {
-        console.error("Delete Brand Error:", error);
-        res.status(500).send({ msg: 'Server error', error: error.message });
     }
-}
 
 
 
-module.exports = {
-    getAllBrands,
-    getBrandById,
-    createBrand,
-    deleteBrand,
-    updateBrand
-}
+    module.exports = {
+        getAllBrands,
+        getBrandById,
+        createBrand,
+        deleteBrand,
+        updateBrand
+    }
