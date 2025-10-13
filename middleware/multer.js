@@ -11,10 +11,10 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, cb )=>{
-     const allowedTypes = /jpeg|jpg|png/
+     const allowedTypes = /jpeg|jpg|png|webp|avif/
      const extname = allowedTypes.test(path.extname(file.originalname))
      if(extname) return cb(null, true)
-     cb(new Error("Only images (png, jpg, jpeg) allowed"))
+     cb(new Error("Only images (png, jpg, jpeg, webp, avif) allowed"))
 }
 
 const upload = multer({storage, fileFilter})

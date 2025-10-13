@@ -80,6 +80,7 @@ async function createProduct(req, res) {
 async function updateProduct(req, res) {
     const id = req.params.id
     const { pName, pDescription, price, quentity, catID, brandID } = req.body;
+    const pImage = req.file ? `/uploads/${req.file.filename}` : null;
 
     try {
         const product = await Product.findByPk(id);
@@ -92,6 +93,7 @@ async function updateProduct(req, res) {
         if (pDescription !== undefined) product.pDescription = pDescription;
         if (price !== undefined) product.price = price;
         if (quentity !== undefined) product.quentity = quentity;
+         if (pImage) product.pImage = pImage;
         if (catID !== undefined) product.catID = catID;
         if (brandID !== undefined) product.brandID = brandID;
 
