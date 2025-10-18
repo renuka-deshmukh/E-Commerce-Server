@@ -171,11 +171,11 @@ async function getProductByBrand(req, res) {
 
 async function getProductsByCategory(req, res) {
     try {
-        const { catID } = req.params;
+        const category = Number(req.params.category); // match the route param
 
         const products = await Product.findAll({
-            where: { catID },
-            include: ["Brand"] // optional, include brand details
+            where: { catID: category }, // filter by catID in DB
+            include: ["Brand"] // optional
         });
 
         if (!products || products.length === 0) {
@@ -196,10 +196,11 @@ async function getProductsByCategory(req, res) {
 
         res.status(200).json({ success: true, products: updatedProducts });
     } catch (error) {
-        console.error(error);
-        res.status(500).send({ msg: "Server error" });
+        console.error("getProductsByCategory Error:", error);
+        res.status(500).send({ msg: "Server error", error: error.message });
     }
 }
+
 
 
 
