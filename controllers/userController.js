@@ -21,7 +21,7 @@ async function register(req, res) {
       email,
       mobileNumber,
       password,
-      role: "admin", // or "user" depending on your system
+      role: "User", // or "user" depending on your system
     });
 
     res.status(200).send({
@@ -67,6 +67,17 @@ async function login(req, res) {
 
 }
 
+async function getAllUsers(req, res) {
+    try {
+        const users = await User.findAll()
+        res.status(200).json({ users: users, success: true })
+    } catch (error) {
+        console.error("getting task error", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+
+
 async function getUserInfo(req, res) {
     const id = req.params.id;
     try {
@@ -85,5 +96,6 @@ async function getUserInfo(req, res) {
 module.exports = {
     register,
     login,
-    getUserInfo
+    getUserInfo,
+    getAllUsers
 }
