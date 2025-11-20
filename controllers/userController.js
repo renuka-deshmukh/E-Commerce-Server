@@ -44,58 +44,66 @@ async function register(req, res) {
 
 
 async function login(req, res) {
-    try {
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        const user = await User.findOne({ where: { email } })
-        if (!user) return res.status(404).send({ msg: "User not found " })
+    const user = await User.findOne({ where: { email } })
+    if (!user) return res.status(404).send({ msg: "User not found " })
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).send({ msg: "Invalid Credentials" })
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).send({ msg: "Invalid Credentials" })
 
-        const token = jwt.sign({ id: user.id, role: user.role }, process.env.SECREATE_KEY, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.SECREATE_KEY, { expiresIn: '1h' });
 
-        res.status(200).send({
-            msg: "Login Successfull",
-            token: token,
-            success: true
-        });
+    res.status(200).send({
+      msg: "Login Successfull",
+      token: token,
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        mobileNumber: user.mobileNumber,
+        role: user.role,
+      },
 
-    } catch (error) {
-        res.status(500).send({ msg: 'server error' })
-    }
+    });
+
+  } catch (error) {
+    res.status(500).send({ msg: 'server error' })
+  }
 
 }
 
 async function getAllUsers(req, res) {
-    try {
-        const users = await User.findAll()
-        res.status(200).json({ users: users, success: true })
-    } catch (error) {
-        console.error("getting task error", error);
-        res.status(500).json({ message: "Server error" });
-    }
+  try {
+    const users = await User.findAll()
+    res.status(200).json({ users: users, success: true })
+  } catch (error) {
+    console.error("getting task error", error);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 
 
 async function getUserInfo(req, res) {
-    const id = req.params.id;
-    try {
-        const user = await User.findByPk(id)
-        if (!user) {
-            return res.status(404).json({ success: false, msg: "User not found" });
-        }
-        res.status(200).send({ success: true, user })
-
-    } catch (error) {
-        res.status(500).send({ msg: 'server error' })
+  const id = req.params.id;
+  try {
+    const user = await User.findByPk(id)
+    if (!user) {
+      return res.status(404).json({ success: false, msg: "User not found" });
     }
+    res.status(200).send({ success: true, user })
+
+  } catch (error) {
+    res.status(500).send({ msg: 'server error' })
+  }
 
 }
 
 module.exports = {
-    register,
-    login,
-    getUserInfo,
-    getAllUsers
+  register,
+  login,
+  getUserInfo,
+  getAllUsers
 }
